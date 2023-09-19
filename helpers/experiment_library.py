@@ -707,15 +707,17 @@ def amplitude_rabi_single(
             
 
     return exp_rabi
+
 # function that returns a ramsey experiment
 def ramsey_parallel(
     qubits,
-    drive_pulse,
-    integration_kernel,
-    readout_pulse,
+    drive_pulse: callable,
+    integration_kernel: callable,
+    readout_pulse: callable,
     delay_sweep,
     num_averages=2**10,
     cal_trace=False,
+    pi_amplitude=0.5,
 ):
     exp_ramsey = Experiment(
         uid="Ramsey Exp",
@@ -775,8 +777,8 @@ def ramsey_parallel(
                     
                 
                 if cal_trace:
-                    with exp_rabi.section(uid="cal_trace_gnd"):
-                        exp_rabi.measure(
+                    with exp_ramsey.section(uid="cal_trace_gnd"):
+                        exp_ramsey.measure(
                             measure_signal=f"measure_{qubit.uid}",
                             measure_pulse=readout_pulse(qubit),
                             handle=f"{qubit.uid}_rabi_cal_trace",
@@ -784,14 +786,14 @@ def ramsey_parallel(
                             integration_kernel=integration_kernel(qubit),
                             reset_delay=qubit.parameters.user_defined["reset_delay_length"],
                         )
-                    with exp_rabi.section(uid="cal_trace_exc"):
-                        exp_rabi.play(
+                    with exp_ramsey.section(uid="cal_trace_exc"):
+                        exp_ramsey.play(
                             signal=f"drive_{qubit.uid}",
                             pulse=drive_pulse(qubit),
                             amplitude=pi_amplitude,
                         )
                         
-                        exp_rabi.measure(
+                        exp_ramsey.measure(
                             measure_signal=f"measure_{qubit.uid}",
                             measure_pulse=readout_pulse(qubit),
                             handle=f"{qubit.uid}_rabi_cal_trace",
