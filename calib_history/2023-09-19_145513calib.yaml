@@ -26,7 +26,7 @@ multiplex_readout:
     calibrated: false
     note: shared for multiplexed qubits
   reset_delay_length: &reset_delay
-    value: 50.0e-5
+    value: 20.0e-5
     unit: dBm
     calibrated: false
     note: shared for multiplexed qubits
@@ -55,7 +55,7 @@ qubits:
   q0:
     # frequencies
     resonance_frequency_ge:
-      value: 5748909294.399337
+      value: 5748989633.770828
       unit: Hz
       calibrated: false
       note: qubit g-e drive (not relative)
@@ -67,7 +67,7 @@ qubits:
       note: qubit e-f drive freq (not realtive)
     drive_lo_frequency: *sg_lo_ch_12
     readout_resonator_frequency:
-      value: 7260000000.0
+      value: 7255000000.0
       unit: Hz
       calibrated: false
       note: qubit readout freq (not relative)
@@ -88,19 +88,19 @@ qubits:
       calibrated: false
     # drive parameters
     amplitude_pi:
-      value: 0.9
+      value: 0.7666523437499999
       unit: unitless
       calibrated: false
     amplitude_pi2:
-      value: 0.45
+      value: 0.38332617187499995
       unit: unitless
       calibrated: false
     pulse_length:
-      value: 10e-08
+      value: 5e-08
       unit: seconds
       calibrated: false
     drive_range_ge:
-      value: 10
+      value: 5
       unit: dBm
       calibrated: false
     amplitude_pi_ef:

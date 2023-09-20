@@ -20,15 +20,18 @@ def qubit_gaussian_pulse(qubit):
         uid=f"gaussian_pulse_drive_{qubit.uid}",
         length=qubit.parameters.user_defined["pulse_length"],
         amplitude = 1.0,
+        sigma=0.3,
     )
 
-def qubit_drive_pulse(qubit):
+def qubit_drive_pulse(qubit, amplitude=None):
+    if amplitude is None:
+        amplitude = qubit.parameters.user_defined["amplitude_pi"]
     return pulse_library.drag(
         uid=f"drag_pulse_{qubit.uid}",
         length=qubit.parameters.user_defined["pulse_length"],
-        amplitude=qubit.parameters.user_defined["amplitude_pi"],
+        amplitude=amplitude,
         sigma=0.3,
-        beta=0.2,
+        beta=0.0,
     )
 
 def create_amp_sweep(id, start_amp, stop_amp, num_points):

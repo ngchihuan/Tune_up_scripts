@@ -88,11 +88,11 @@ qubits:
       calibrated: false
     # drive parameters
     amplitude_pi:
-      value: 0.9
+      value: 0.1
       unit: unitless
       calibrated: false
     amplitude_pi2:
-      value: 0.45
+      value: 0.05
       unit: unitless
       calibrated: false
     pulse_length:
@@ -100,7 +100,7 @@ qubits:
       unit: seconds
       calibrated: false
     drive_range_ge:
-      value: 10
+      value: -25
       unit: dBm
       calibrated: false
     amplitude_pi_ef:

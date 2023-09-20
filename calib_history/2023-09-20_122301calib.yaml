@@ -55,7 +55,7 @@ qubits:
   q0:
     # frequencies
     resonance_frequency_ge:
-      value: 5748909294.399337
+      value: 5748547178.359061
       unit: Hz
       calibrated: false
       note: qubit g-e drive (not relative)
@@ -88,11 +88,11 @@ qubits:
       calibrated: false
     # drive parameters
     amplitude_pi:
-      value: 0.9
+      value: 0.38
       unit: unitless
       calibrated: false
     amplitude_pi2:
-      value: 0.45
+      value: 0.19
       unit: unitless
       calibrated: false
     pulse_length:
@@ -100,7 +100,7 @@ qubits:
       unit: seconds
       calibrated: false
     drive_range_ge:
-      value: 10
+      value: -25
       unit: dBm
       calibrated: false
     amplitude_pi_ef:
