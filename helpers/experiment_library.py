@@ -14,6 +14,37 @@ def flatten(l):
     # flatten a nested list to a single level
     return [item for sublist in l for item in sublist]
 
+# pulses
+def qubit_gaussian_pulse(qubit):
+    return pulse_library.gaussian(
+        uid=f"gaussian_pulse_drive_{qubit.uid}",
+        length=qubit.parameters.user_defined["pulse_length"],
+        amplitude = 1.0,
+    )
+
+def qubit_drive_pulse(qubit):
+    return pulse_library.drag(
+        uid=f"drag_pulse_{qubit.uid}",
+        length=qubit.parameters.user_defined["pulse_length"],
+        amplitude=qubit.parameters.user_defined["amplitude_pi"],
+        sigma=0.3,
+        beta=0.2,
+    )
+
+def create_amp_sweep(id, start_amp, stop_amp, num_points):
+    return LinearSweepParameter(
+        uid=f"amp_sweep_{id}",
+        start=start_amp,
+        stop=stop_amp,
+        count=num_points,
+    )
+
+def readout_gauss_square_pulse(qubit):
+    return pulse_library.gaussian_square(
+        uid=f"readout_pulse_{qubit.uid}",
+        length=qubit.parameters.user_defined["readout_length"],
+        amplitude=qubit.parameters.user_defined["readout_amplitude"],
+    )
 
 def qubit_spectroscopy_pulse(qubit):
     return pulse_library.const(
@@ -23,6 +54,19 @@ def qubit_spectroscopy_pulse(qubit):
         # can_compress=True,
     )
 
+def qubit_gaussian_pulse(qubit):
+    return pulse_library.gaussian(
+        uid=f"gaussian_pulse_drive_{qubit.uid}",
+        length=qubit.parameters.user_defined["pulse_length"],
+        amplitude = qubit.parameters.user_defined["amplitude_pi"],
+    )
+
+def qubit_gaussian_halfpi_pulse(qubit):
+    return pulse_library.gaussian(
+        uid=f"gaussian_pulse_drive_{qubit.uid}",
+        length=qubit.parameters.user_defined["pulse_length"],
+        amplitude = qubit.parameters.user_defined["amplitude_pi2"],
+    )
 
 def readout_pulse(qubit):
     return pulse_library.const(
@@ -38,7 +82,17 @@ def integration_kernel(qubit):
         length=qubit.parameters.user_defined["readout_length"],
         amplitude=1,
     )
-
+# define sweep parameter
+def create_freq_sweep(
+    id, start_freq, stop_freq, num_points, axis_name="Frequency [Hz]"
+):
+    return LinearSweepParameter(
+        uid=f"frequency_sweep_{id}",
+        start=start_freq,
+        stop=stop_freq,
+        count=num_points,
+        axis_name=axis_name,
+    )
 
 def resonator_spectroscopy_parallel_CW_full_range(
     qubits,
