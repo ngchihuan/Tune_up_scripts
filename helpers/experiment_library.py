@@ -14,6 +14,37 @@ def flatten(l):
     # flatten a nested list to a single level
     return [item for sublist in l for item in sublist]
 
+# pulses
+def qubit_gaussian_pulse(qubit):
+    return pulse_library.gaussian(
+        uid=f"gaussian_pulse_drive_{qubit.uid}",
+        length=qubit.parameters.user_defined["pulse_length"],
+        amplitude = 1.0,
+    )
+
+def qubit_drive_pulse(qubit):
+    return pulse_library.drag(
+        uid=f"drag_pulse_{qubit.uid}",
+        length=qubit.parameters.user_defined["pulse_length"],
+        amplitude=qubit.parameters.user_defined["amplitude_pi"],
+        sigma=0.3,
+        beta=0.2,
+    )
+
+def create_amp_sweep(id, start_amp, stop_amp, num_points):
+    return LinearSweepParameter(
+        uid=f"amp_sweep_{id}",
+        start=start_amp,
+        stop=stop_amp,
+        count=num_points,
+    )
+
+def readout_gauss_square_pulse(qubit):
+    return pulse_library.gaussian_square(
+        uid=f"readout_pulse_{qubit.uid}",
+        length=qubit.parameters.user_defined["readout_length"],
+        amplitude=qubit.parameters.user_defined["readout_amplitude"],
+    )
 
 def qubit_spectroscopy_pulse(qubit):
     return pulse_library.const(
@@ -23,6 +54,19 @@ def qubit_spectroscopy_pulse(qubit):
         # can_compress=True,
     )
 
+def qubit_gaussian_pulse(qubit):
+    return pulse_library.gaussian(
+        uid=f"gaussian_pulse_drive_{qubit.uid}",
+        length=qubit.parameters.user_defined["pulse_length"],
+        amplitude = qubit.parameters.user_defined["amplitude_pi"],
+    )
+
+def qubit_gaussian_halfpi_pulse(qubit):
+    return pulse_library.gaussian(
+        uid=f"gaussian_pulse_drive_{qubit.uid}",
+        length=qubit.parameters.user_defined["pulse_length"],
+        amplitude = qubit.parameters.user_defined["amplitude_pi2"],
+    )
 
 def readout_pulse(qubit):
     return pulse_library.const(
@@ -38,7 +82,17 @@ def integration_kernel(qubit):
         length=qubit.parameters.user_defined["readout_length"],
         amplitude=1,
     )
-
+# define sweep parameter
+def create_freq_sweep(
+    id, start_freq, stop_freq, num_points, axis_name="Frequency [Hz]"
+):
+    return LinearSweepParameter(
+        uid=f"frequency_sweep_{id}",
+        start=start_freq,
+        stop=stop_freq,
+        count=num_points,
+        axis_name=axis_name,
+    )
 
 def resonator_spectroscopy_parallel_CW_full_range(
     qubits,
@@ -707,15 +761,17 @@ def amplitude_rabi_single(
             
 
     return exp_rabi
+
 # function that returns a ramsey experiment
 def ramsey_parallel(
     qubits,
-    drive_pulse,
-    integration_kernel,
-    readout_pulse,
+    drive_pulse: callable,
+    integration_kernel: callable,
+    readout_pulse: callable,
     delay_sweep,
     num_averages=2**10,
     cal_trace=False,
+    pi_amplitude=0.5,
 ):
     exp_ramsey = Experiment(
         uid="Ramsey Exp",
@@ -775,8 +831,8 @@ def ramsey_parallel(
                     
                 
                 if cal_trace:
-                    with exp_rabi.section(uid="cal_trace_gnd"):
-                        exp_rabi.measure(
+                    with exp_ramsey.section(uid="cal_trace_gnd"):
+                        exp_ramsey.measure(
                             measure_signal=f"measure_{qubit.uid}",
                             measure_pulse=readout_pulse(qubit),
                             handle=f"{qubit.uid}_rabi_cal_trace",
@@ -784,14 +840,14 @@ def ramsey_parallel(
                             integration_kernel=integration_kernel(qubit),
                             reset_delay=qubit.parameters.user_defined["reset_delay_length"],
                         )
-                    with exp_rabi.section(uid="cal_trace_exc"):
-                        exp_rabi.play(
+                    with exp_ramsey.section(uid="cal_trace_exc"):
+                        exp_ramsey.play(
                             signal=f"drive_{qubit.uid}",
                             pulse=drive_pulse(qubit),
                             amplitude=pi_amplitude,
                         )
                         
-                        exp_rabi.measure(
+                        exp_ramsey.measure(
                             measure_signal=f"measure_{qubit.uid}",
                             measure_pulse=readout_pulse(qubit),
                             handle=f"{qubit.uid}_rabi_cal_trace",

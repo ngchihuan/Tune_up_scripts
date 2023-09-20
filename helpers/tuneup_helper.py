@@ -13,6 +13,7 @@ from laboneq.simple import *
 from ruamel.yaml import YAML
 from pathlib import Path
 import datetime
+from scipy.optimize import curve_fit, fmin
 
 
 # Initial functions and definiions
@@ -362,26 +363,38 @@ def rotate_to_real_axis(complex_values):
     return res_values
 
 
-def analyze_qspec(res, handle, window_len=41, rotate=False, flip=False):
+def analyze_qspec(res, handle, f0=1E9, a=0.01, gamma = 3E6, offset = 0.04,rotate=False, flip=False):
+    
+
     qspec_res = res.get_data(handle)
     qspec_freq = res.get_axis(handle)[0]
 
     y = np.abs(qspec_res) if not rotate else np.real(rotate_to_real_axis(qspec_res))
-    y = -y if flip else y
 
-    window = np.hanning(window_len)
-    y = np.convolve(window / window.sum(), y)
-    y = y[int((window_len - 1) / 2) : len(y) - int((window_len - 1) / 2)]
+    flip_sign = -1 if flip else +1
 
-    res_freq = qspec_freq[np.argmax(y)]
+
+
+    def lorentzian(f, f0, a, gamma, offset, flip_sign):
+        penalization = abs(min(0, gamma)) * 1000
+        return (
+            offset + flip_sign * a / (1 + (f - f0) ** 2 / gamma**2) + penalization
+        )
+
+
+    (f_0, a, gamma, offset, flip_sign), _ = curve_fit(
+        lorentzian, qspec_freq, y, (f0, a, gamma, offset, flip_sign)
+    )
+
+    y_fit = lorentzian(qspec_freq, f_0,a ,gamma,offset, flip_sign)
 
     plt.figure()
     plt.plot(qspec_freq, y)
     plt.plot(qspec_freq, abs(qspec_res), ".")
-    plt.plot([res_freq, res_freq], [min(y), max(y)])
+    plt.plot(qspec_freq,y_fit)
     plt.show()
 
-    return res_freq
+    return f_0
 
 
 def create_x90(qubit_parameters, qubit):
@@ -609,3 +622,35 @@ def analyze_ACStark(qubit_parameters, results, handle, qubit, plot=True):
         plt.show()
 
     return popt
+
+
+#plotting helpers
+def plot_with_trace_rabi(res):
+    handles = list(res.acquired_results.keys())
+    res1 = np.asarray(res.get_data(handles[0]))
+    res_cal_trace= np.asarray(res.get_data(handles[1]))
+    axis1 = res.get_axis(handles[0])[0]
+    delta_x = axis1[-1]-axis1[-2]
+    axis2 = np.linspace(axis1[-1]+delta_x,axis1[-1] + 2*delta_x,2)
+
+    delta_vec = res_cal_trace[1] -res_cal_trace[0]
+    angle = np.angle(delta_vec)
+    rd = []
+    for r in [res1,res_cal_trace]:
+        r = r - res_cal_trace[0]
+        r = r * np.exp(-1j*angle)
+        r = r/ np.abs(delta_vec)
+        rd.append(r)
+        
+    pi_amp = axis1[np.argmax(np.real(rd[0]))]
+
+    plt.xlabel(handles[0])
+    plt.ylabel("|e> population")
+    plt.plot(axis1,np.real(rd[0]),'o')
+    plt.plot(axis2[0],np.real(rd[1][0]),'o', color="gray")
+    plt.plot(axis2[0],np.real(rd[1][1]),'o', color="black")
+    plt.axhline(y=np.real(rd[1][0]), color='gray', linestyle='--', linewidth=2)
+    plt.axhline(y=np.real(rd[1][1]), color='gray', linestyle='--', linewidth=2)
+    plt.axvline(x=pi_amp, color='gray', linestyle='--', linewidth=2)
+    plt.text(x=pi_amp,y = max(np.real(rd[0]))/2, s= f"piamp:{pi_amp}")
+    plt.plot()

@@ -16,17 +16,17 @@ multiplex_readout:
     unit: seconds
     calibrated: false
   readout_range_out: &qa_out_range
-    value: -15
+    value: -25
     unit: dBm
     calibrated: false
     note: shared for multiplexed qubits
   readout_range_in: &qa_in_range
-    value: -20
+    value: -5
     unit: dBm
     calibrated: false
     note: shared for multiplexed qubits
   reset_delay_length: &reset_delay
-    value: 1.0e-5
+    value: 50.0e-5
     unit: dBm
     calibrated: false
     note: shared for multiplexed qubits
@@ -37,16 +37,16 @@ local_oscillators:
     calibrated: false
     note: readout LO freq
   drive_lo_12: &sg_lo_ch_12
-    value: 4700000000.0
+    value: 5000000000.0
     unit: Hz
     calibrated: false
     note: drive LO frequency for CH 1 and 2
-  drive_lo_34: &sg_lo_ch_34
+  drive_lo_34:
     value: 5000000000.0
     unit: Hz
     calibrated: false
     note: drive LO frequency for CH 3 and 4
-  drive_lo_56: &sg_lo_ch_56
+  drive_lo_56:
     value: 6000000000.0
     unit: Hz
     calibrated: false
@@ -55,10 +55,11 @@ qubits:
   q0:
     # frequencies
     resonance_frequency_ge:
-      value: 4717600000.0
+      value: 5748547178.359061
       unit: Hz
       calibrated: false
       note: qubit g-e drive (not relative)
+
     resonance_frequency_ef:
       value: 0.0
       unit: Hz
@@ -66,7 +67,7 @@ qubits:
       note: qubit e-f drive freq (not realtive)
     drive_lo_frequency: *sg_lo_ch_12
     readout_resonator_frequency:
-      value: 7035430430
+      value: 7255000000.0
       unit: Hz
       calibrated: false
       note: qubit readout freq (not relative)
@@ -87,19 +88,19 @@ qubits:
       calibrated: false
     # drive parameters
     amplitude_pi:
-      value: 0.7666523437499999
+      value: 0.38
       unit: unitless
       calibrated: false
     amplitude_pi2:
-      value: 0.38332617187499995
+      value: 0.19
       unit: unitless
       calibrated: false
     pulse_length:
-      value: 5e-08
+      value: 10e-08
       unit: seconds
       calibrated: false
     drive_range_ge:
-      value: -5
+      value: 10
       unit: dBm
       calibrated: false
     amplitude_pi_ef:
@@ -115,371 +116,6 @@ qubits:
       unit: dBm
       calibrated: false
       # dc source
-    dc_source:
-      value: 0.0
-      unit: volts
-      slot: 0
-      calibrated: false
-      note: not used here
-    cr_freq:
-      value: 0.0
-      unit: Hz
-      calibrated: false
-      note: used fixed freq tune-up
-  q1:
-    # frequencies
-    resonance_frequency_ge:
-      value: 5187193179.88
-      unit: Hz
-      calibrated: false
-      note: qubit g-e drive (not relative)
-    resonance_frequency_ef:
-      value: 0.0
-      unit: Hz
-      calibrated: false
-      note: qubit g-e drive (not relative)
-    drive_lo_frequency: *sg_lo_ch_12
-    readout_resonator_frequency:
-      value: 7236582582.0
-      unit: Hz
-      calibrated: false
-      note: qubit readout freq (not relative)
-    readout_lo_frequency: *qa_lo
-    # collection readout parameters
-    readout_length: *readout_length
-    readout_amplitude: *readout_amplitude
-    readout_integration_delay: *integration_delay
-    pulse_length_spectroscopy: *spec_length
-    readout_range_out: *qa_out_range
-    readout_range_in: *qa_in_range
-    # delay inserted after every readout
-    reset_delay_length: *reset_delay
-    # thresholding
-    threshold_ge:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    # drive parameters
-    amplitude_pi:
-      value: 0.8
-      unit: unitless
-      calibrated: false
-    amplitude_pi2:
-      value: 0.4
-      unit: unitless
-      calibrated: false
-    pulse_length:
-      value: 100.0e-9
-      unit: seconds
-      calibrated: false
-    drive_range_ge:
-      value: 5
-      unit: dBm
-      calibrated: false
-    amplitude_pi_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    amplitude_pi2_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    drive_range_ef:
-      value: 5
-      unit: dBm
-      calibrated: false
-    dc_source:
-      value: 0.0
-      unit: volts
-      slot: 0
-      calibrated: false
-      note: not used here
-    cr_freq:
-      value: 0.0
-      unit: Hz
-      calibrated: false
-      note: used fixed freq tune-up
-  q2:
-    # frequencies
-    resonance_frequency_ge:
-      value: 5.0e+9
-      unit: Hz
-      calibrated: false
-      note: qubit g-e drive (not relative)
-    resonance_frequency_ef:
-      value: 5.0e+9
-      unit: Hz
-      calibrated: false
-      note: qubit e-f drive freq (not relative)
-    drive_lo_frequency: *sg_lo_ch_34
-    readout_resonator_frequency:
-      value: 7435200000.0
-      unit: Hz
-      calibrated: false
-      note: qubit readout freq (not relative)
-    readout_lo_frequency: *qa_lo
-    # collection readout parameters
-    readout_length: *readout_length
-    readout_amplitude: *readout_amplitude
-    readout_integration_delay: *integration_delay
-    pulse_length_spectroscopy: *spec_length
-    readout_range_out: *qa_out_range
-    readout_range_in: *qa_in_range
-    # delay inserted after every readout
-    reset_delay_length: *reset_delay
-    # thresholding
-    threshold_ge:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    # drive parameters
-    amplitude_pi:
-      value: 0.75
-      unit: unitless
-      calibrated: false
-    amplitude_pi2:
-      value: 0.375
-      unit: unitless
-      calibrated: false
-    pulse_length:
-      value: 100.0e-9
-      unit: seconds
-      calibrated: false
-    drive_range_ge:
-      value: 5
-      unit: dBm
-      calibrated: false
-    amplitude_pi_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    amplitude_pi2_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    drive_range_ef:
-      value: 5
-      unit: dBm
-      calibrated: false
-    dc_source:
-      value: 0.0
-      unit: volts
-      slot: 0
-      calibrated: false
-      note: not used here
-    cr_freq:
-      value: 0.0
-      unit: Hz
-      calibrated: false
-      note: used fixed freq tune-up
-  q3:
-    # frequencies
-    resonance_frequency_ge:
-      value: 5.0e+9
-      unit: Hz
-      calibrated: false
-      note: qubit g-e drive (not relative)
-    resonance_frequency_ef:
-      value: 5.0e+9
-      unit: Hz
-      calibrated: false
-      note: qubit e-f drive freq (not relative)
-    drive_lo_frequency: *sg_lo_ch_34
-    readout_resonator_frequency:
-      value: 7435200000.0
-      unit: Hz
-      calibrated: false
-      note: qubit readout freq (not relative)
-    readout_lo_frequency: *qa_lo
-    # collection readout parameters
-    readout_length: *readout_length
-    readout_amplitude: *readout_amplitude
-    readout_integration_delay: *integration_delay
-    pulse_length_spectroscopy: *spec_length
-    readout_range_out: *qa_out_range
-    readout_range_in: *qa_in_range
-    # delay inserted after every readout
-    reset_delay_length: *reset_delay
-    # thresholding
-    threshold_ge:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    # drive parameters
-    amplitude_pi:
-      value: 0.90
-      unit: unitless
-      calibrated: false
-    amplitude_pi2:
-      value: 0.45
-      unit: unitless
-      calibrated: false
-    pulse_length:
-      value: 100.0e-9
-      unit: seconds
-      calibrated: false
-    drive_range_ge:
-      value: 5
-      unit: dBm
-      calibrated: false
-    amplitude_pi_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    amplitude_pi2_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    drive_range_ef:
-      value: 5
-      unit: dBm
-      calibrated: false
-    dc_source:
-      value: 0.0
-      unit: volts
-      slot: 0
-      calibrated: false
-      note: not used here
-    cr_freq:
-      value: 0.0
-      unit: Hz
-      calibrated: false
-      note: used fixed freq tune-up
-  q4:
-    # frequencies
-    resonance_frequency_ge:
-      value: 6.0e+9
-      unit: Hz
-      calibrated: false
-      note: qubit g-e drive (not relative)
-    resonance_frequency_ef:
-      value: 6.0e+9
-      unit: Hz
-      calibrated: false
-      note: qubit e-f drive freq (not relative)
-    drive_lo_frequency: *sg_lo_ch_56
-    readout_resonator_frequency:
-      value: 7435200000.0
-      unit: Hz
-      calibrated: false
-      note: qubit readout freq (not relative)
-    readout_lo_frequency: *qa_lo
-    # collection readout parameters
-    readout_length: *readout_length
-    readout_amplitude: *readout_amplitude
-    readout_integration_delay: *integration_delay
-    pulse_length_spectroscopy: *spec_length
-    readout_range_out: *qa_out_range
-    readout_range_in: *qa_in_range
-    # delay inserted after every readout
-    reset_delay_length: *reset_delay
-    # thresholding
-    threshold_ge:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    # drive parameters
-    amplitude_pi:
-      value: 0.65
-      unit: unitless
-      calibrated: false
-    amplitude_pi2:
-      value: 0.325
-      unit: unitless
-      calibrated: false
-    pulse_length:
-      value: 100.0e-9
-      unit: seconds
-      calibrated: false
-    drive_range_ge:
-      value: 5
-      unit: dBm
-      calibrated: false
-    amplitude_pi_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    amplitude_pi2_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    drive_range_ef:
-      value: 5
-      unit: dBm
-      calibrated: false
-    dc_source:
-      value: 0.0
-      unit: volts
-      slot: 0
-      calibrated: false
-      note: not used here
-    cr_freq:
-      value: 0.0
-      unit: Hz
-      calibrated: false
-      note: used fixed freq tune-up
-  q5:
-    # frequencies
-    resonance_frequency_ge:
-      value: 6.2e+9
-      unit: Hz
-      calibrated: false
-      note: qubit g-e drive (not relative)
-    resonance_frequency_ef:
-      value: 6.2e+9
-      unit: Hz
-      calibrated: false
-      note: qubit e-f drive freq (not relative)
-    drive_lo_frequency: *sg_lo_ch_56
-    readout_resonator_frequency:
-      value: 7435200000.0
-      unit: Hz
-      calibrated: false
-      note: qubit readout freq (not relative)
-    readout_lo_frequency: *qa_lo
-    # collection readout parameters
-    readout_length: *readout_length
-    readout_amplitude: *readout_amplitude
-    readout_integration_delay: *integration_delay
-    pulse_length_spectroscopy: *spec_length
-    readout_range_out: *qa_out_range
-    readout_range_in: *qa_in_range
-    # delay inserted after every readout
-    reset_delay_length: *reset_delay
-    # thresholding
-    threshold_ge:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    # drive parameters
-    amplitude_pi:
-      value: 0.7
-      unit: unitless
-      calibrated: false
-    amplitude_pi2:
-      value: 0.35
-      unit: unitless
-      calibrated: false
-    pulse_length:
-      value: 100.0e-9
-      unit: seconds
-      calibrated: false
-    drive_range_ge:
-      value: 5
-      unit: dBm
-      calibrated: false
-    amplitude_pi_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    amplitude_pi2_ef:
-      value: 0.0
-      unit: unitless
-      calibrated: false
-    drive_range_ef:
-      value: 5
-      unit: dBm
-      calibrated: false
     dc_source:
       value: 0.0
       unit: volts
