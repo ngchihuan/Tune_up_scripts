@@ -532,6 +532,42 @@ def evaluate_ramsey(res, handle, plot=True, rotate=False, flip=False, use_phase=
     return [t2, detuning_freq]
 
 
+# def evaluate_T1(res, handle, plot=True, rotate=False):
+#     def T1_curve(x, offset, amplitude, t1):
+#         return amplitude * np.exp(-x / t1) + offset
+
+#     x = res.get_axis(handle)[0]
+
+#     y = (
+#         np.abs(res.get_data(handle))
+#         if not rotate
+#         else -np.real(rotate_to_real_axis(res.get_data(handle)))
+#     )
+
+#     offset_guess = min(y)
+#     amplitude_guess = max(y)
+#     t1_guess = 20e-6
+
+#     p0 = [offset_guess, amplitude_guess, t1_guess]
+
+#     popt = scipy.optimize.curve_fit(T1_curve, x, y, p0=p0)[0]
+
+#     t1 = popt[2]
+
+#     # pi_amp = scipy.optimize.fmin(lambda x: -rabi_curve(x, *popt), x[np.argmax(y)], disp=False)[0]
+
+#     #  pi2_amp = scipy.optimize.fmin(lambda x: abs(rabi_curve(x, *popt)-popt[0]), pi_amp/2, disp=False )[0]
+
+#     if plot:
+#         plt.figure()
+#         plt.plot(x, T1_curve(x, *popt))
+#         plt.plot(x, y, ".")
+#     #  plt.plot([pi_amp, pi_amp], [min(y), rabi_curve(pi_amp, *popt)])
+#     #  plt.plot([pi2_amp, pi2_amp], [min(y), rabi_curve(pi2_amp, *popt)])
+
+#     print(f"T1 found to be {t1*1e6} us.")
+#     return t1
+
 def evaluate_T1(res, handle, plot=True, rotate=False):
     def T1_curve(x, offset, amplitude, t1):
         return amplitude * np.exp(-x / t1) + offset
@@ -554,18 +590,23 @@ def evaluate_T1(res, handle, plot=True, rotate=False):
 
     t1 = popt[2]
 
+
     # pi_amp = scipy.optimize.fmin(lambda x: -rabi_curve(x, *popt), x[np.argmax(y)], disp=False)[0]
 
     #  pi2_amp = scipy.optimize.fmin(lambda x: abs(rabi_curve(x, *popt)-popt[0]), pi_amp/2, disp=False )[0]
 
     if plot:
         plt.figure()
-        plt.plot(x, T1_curve(x, *popt))
-        plt.plot(x, y, ".")
+        plt.plot(x*1e6, T1_curve(x, *popt))
+        plt.plot(x*1e6, y, ".")
+        plt.xlabel(f"delay (us)")
+        plt.ylabel("Amplitude (a.u.)")
+        plt.axvline(x=t1*1e6, color='gray', linestyle='--', linewidth=2)
+        plt.text(x=2*t1*1e6,y= max(y)/2,s=f"T1= {t1*1e6:.3f}us.")
     #  plt.plot([pi_amp, pi_amp], [min(y), rabi_curve(pi_amp, *popt)])
     #  plt.plot([pi2_amp, pi2_amp], [min(y), rabi_curve(pi2_amp, *popt)])
 
-    print(f"T1 found to be {t1*1e6} us.")
+    print(f"T1 found to be {t1*1e6:.3f} us.")
     return t1
 
 
@@ -653,4 +694,35 @@ def plot_with_trace_rabi(res):
     plt.axhline(y=np.real(rd[1][1]), color='gray', linestyle='--', linewidth=2)
     plt.axvline(x=pi_amp, color='gray', linestyle='--', linewidth=2)
     plt.text(x=pi_amp,y = max(np.real(rd[0]))/2, s= f"piamp:{pi_amp}")
+    plt.plot()
+
+# havenot tested yet
+def plot_with_trace_ramsey(res):
+    handles = list(res.acquired_results.keys())
+    res1 = np.asarray(res.get_data(handles[0]))
+    res_cal_trace= np.asarray(res.get_data(handles[1]))
+    axis1 = res.get_axis(handles[0])[0]
+    delta_x = axis1[-1]-axis1[-2]
+    axis2 = np.linspace(axis1[-1]+delta_x,axis1[-1] + 2*delta_x,2)
+
+    delta_vec = res_cal_trace[1] -res_cal_trace[0]
+    angle = np.angle(delta_vec)
+    rd = []
+    for r in [res1,res_cal_trace]:
+        r = r - res_cal_trace[0]
+        r = r * np.exp(-1j*angle)
+        r = r/ np.abs(delta_vec)
+        rd.append(r)
+        
+    pi_amp = axis1[np.argmax(np.real(rd[0]))]
+
+    plt.xlabel(handles[0])
+    plt.ylabel("|e> population")
+    plt.plot(axis1,np.real(rd[0]),'o')
+    plt.plot(axis2[0],np.real(rd[1][0]),'o', color="gray")
+    plt.plot(axis2[0],np.real(rd[1][1]),'o', color="black")
+    plt.axhline(y=np.real(rd[1][0]), color='gray', linestyle='--', linewidth=2)
+    plt.axhline(y=np.real(rd[1][1]), color='gray', linestyle='--', linewidth=2)
+    # plt.axvline(x=pi_amp, color='gray', linestyle='--', linewidth=2)
+    # plt.text(x=pi_amp,y = max(np.real(rd[0]))/2, s= f"piamp:{pi_amp}")
     plt.plot()
