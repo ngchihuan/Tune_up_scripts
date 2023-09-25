@@ -1170,3 +1170,93 @@ def plot_with_trace(res):
         
     temp_rd = np.concatenate((rd[0],rd[1])).flatten()
     plt.plot(axis,np.abs(temp_rd),'-o')
+
+
+
+def resonator_spectroscopy_g_vs_e(
+    qubit,
+    drive_pulse,
+    readout_pulse,
+    integration_kernel,
+    frequency_sweep,
+    measure_range=-25,
+    acquire_range=-25,
+    num_averages=2**8,
+    set_lo=False,
+    lo_freq=None,
+):
+    # Create resonator spectroscopy experiment - uses only readout drive and signal acquisition
+    exp_spec = Experiment(
+        uid="Resonator Spectroscopy CW Single",
+        signals=[
+            ExperimentSignal(f"measure_{qubit.uid}", map_to=qubit.signals["measure"]),
+            ExperimentSignal(f"acquire_{qubit.uid}", map_to=qubit.signals["acquire"]),
+            ExperimentSignal(f"drive_{qubit.uid}", map_to=qubit.signals["drive"]),
+        ],
+    )
+
+    ## define experimental sequence
+    # loop - average multiple measurements for each frequency - measurement in spectroscopy mode
+    with exp_spec.acquire_loop_rt(
+        uid="shots",
+        count=num_averages,
+        acquisition_type=AcquisitionType.SPECTROSCOPY,
+    ):
+        if drive_pulse is None:
+            with exp_spec.sweep(uid="resonator_frequency_g", parameter=frequency_sweep):
+                # readout pulse and data acquisition
+
+                with exp_spec.section(uid=f"resonator_spectroscopy_{qubit.uid}_g"):
+                    # resonator signal readout
+                    exp_spec.measure(
+                            measure_signal=f"measure_{qubit.uid}",
+                            measure_pulse=readout_pulse(qubit),
+                            handle=f"resonator_spectroscopy_{qubit.uid}",
+                            acquire_signal=f"acquire_{qubit.uid}",
+                            integration_kernel=integration_kernel(qubit),
+                            reset_delay=1e-6,
+                        )
+                with exp_spec.section(uid=f"delay_{qubit.uid}_g", length=1e-6):
+                    exp_spec.reserve(signal=f"measure_{qubit.uid}")
+                    exp_spec.reserve(signal=f"acquire_{qubit.uid}")
+
+        # excited
+        else:
+            with exp_spec.sweep(uid="resonator_frequency_e", parameter=frequency_sweep):
+                with exp_spec.section(uid="excitation"):
+                    exp_spec.play(signal=f"drive_{qubit.uid}", pulse = drive_pulse(qubit))
+                with exp_spec.section(uid=f"resonator_spectroscopy_{qubit.uid}_e",play_after="excitation"):
+                    # resonator signal readout
+                    exp_spec.measure(
+                            measure_signal=f"measure_{qubit.uid}",
+                            measure_pulse=readout_pulse(qubit),
+                            handle=f"resonator_spectroscopy_{qubit.uid}",
+                            acquire_signal=f"acquire_{qubit.uid}",
+                            integration_kernel=integration_kernel(qubit),
+                            reset_delay=qubit.parameters.user_defined["reset_delay_length"],
+                        )
+                with exp_spec.section(uid=f"delay_{qubit.uid}_e", length=1e-6):
+                    exp_spec.reserve(signal=f"measure_{qubit.uid}")
+                    exp_spec.reserve(signal=f"acquire_{qubit.uid}")
+
+    cal = Calibration()
+    if set_lo and lo_freq is not None:
+        local_oscillator = Oscillator(frequency=lo_freq)
+    else:
+        local_oscillator = Oscillator(frequency=qubit.parameters.readout_lo_frequency)
+
+    cal[f"measure_{qubit.uid}"] = SignalCalibration(
+        oscillator=Oscillator(
+            frequency=frequency_sweep, modulation_type=ModulationType.HARDWARE
+        ),
+        local_oscillator=local_oscillator,
+        range=measure_range,
+    )
+    cal[f"acquire_{qubit.uid}"] = SignalCalibration(
+        local_oscillator=local_oscillator,
+        range=acquire_range,
+        port_delay=250e-9,
+    )
+    exp_spec.set_calibration(cal)
+
+    return exp_spec

@@ -67,7 +67,7 @@ qubits:
       note: qubit e-f drive freq (not realtive)
     drive_lo_frequency: *sg_lo_ch_12
     readout_resonator_frequency:
-      value: 7260000000.0
+      value: 7258181818.181818
       unit: Hz
       calibrated: false
       note: qubit readout freq (not relative)
