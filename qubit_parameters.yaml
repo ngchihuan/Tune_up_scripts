@@ -4,7 +4,7 @@ multiplex_readout:
     unit: seconds
     calibrated: false
   readout_amplitude: &readout_amplitude
-    value: 0.55
+    value: 1.0
     unit: unitless
     calibrated: false
   readout_integration_delay: &integration_delay
@@ -55,7 +55,7 @@ qubits:
   q0:
     # frequencies
     resonance_frequency_ge:
-      value: 5748913649.545181
+      value: 5748939557.445143
       unit: Hz
       calibrated: false
       note: qubit g-e drive (not relative)
@@ -67,7 +67,7 @@ qubits:
       note: qubit e-f drive freq (not realtive)
     drive_lo_frequency: *sg_lo_ch_12
     readout_resonator_frequency:
-      value: 7258181818.181818
+      value: 7258787878.787879
       unit: Hz
       calibrated: false
       note: qubit readout freq (not relative)
@@ -88,11 +88,11 @@ qubits:
       calibrated: false
     # drive parameters
     amplitude_pi:
-      value: 0.38907421875000003
+      value: 0.39202734375000003
       unit: unitless
       calibrated: false
     amplitude_pi2:
-      value: 0.1991725639343262
+      value: 0.1989998176574707
       unit: unitless
       calibrated: false
     pulse_length:
