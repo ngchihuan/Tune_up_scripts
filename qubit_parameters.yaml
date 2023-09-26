@@ -1,6 +1,6 @@
 multiplex_readout:
   readout_length: &readout_length
-    value: 2.0e-6
+    value: 0.8e-6
     unit: seconds
     calibrated: false
   readout_amplitude: &readout_amplitude
