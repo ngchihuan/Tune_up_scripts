@@ -726,3 +726,19 @@ def plot_with_trace_ramsey(res):
     # plt.axvline(x=pi_amp, color='gray', linestyle='--', linewidth=2)
     # plt.text(x=pi_amp,y = max(np.real(rd[0]))/2, s= f"piamp:{pi_amp}")
     plt.plot()
+
+
+def calculate_fidelity(res0_rot,res1_rot,threshold):
+    prepared_g_measured_g = np.count_nonzero(res0_rot.real < threshold)/len(res0_rot.real)
+    prepared_g_measured_e = np.count_nonzero(res0_rot.real > threshold)/len(res0_rot.real)
+    prepared_e_measured_g = np.count_nonzero(res1_rot.real < threshold)/len(res1_rot.real)
+    prepared_e_measured_e = np.count_nonzero(res1_rot.real > threshold)/len(res1_rot.real)
+
+    fidelity = (  1- prepared_g_measured_e - prepared_e_measured_g )
+    print(f"ee:{prepared_e_measured_e}")
+    print(f"gg:{prepared_g_measured_g}")
+    print(f"eg:{prepared_e_measured_g}")
+    print(f"ge:{prepared_g_measured_e}")
+    print(f"Fidelity {fidelity}")
+
+    return fidelity
